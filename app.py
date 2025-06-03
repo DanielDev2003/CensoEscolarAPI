@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from instituicoes import *
 
 app = Flask(__name__)
@@ -22,6 +22,44 @@ def getInstituicaoByIdResource(id):
         return jsonify(instituicao), 200
     else:
         return jsonify({"erro": "Instituição não encontrada"}), 404
+    
+@app.post("/instituicao")
+def postInstituicaoResource():
+    nova_instituicao = request.json
+
+    if "CO_ENTIDADE" not in nova_instituicao:
+        return jsonify({"erro": "Campo 'CO_ENTIDADE' obrigatório"}), 400
+    if nova_instituicao["CO_ENTIDADE"] in instituicoes_dict:
+        return jsonify({"erro": "CO_ENTIDADE já existe"}), 400
+
+    # Adiciona à lista e ao dicionário
+    instituicoes_lista.append(nova_instituicao)
+    instituicoes_dict[nova_instituicao["CO_ENTIDADE"]] = nova_instituicao
+
+    # Persiste no arquivo
+    escreverInstituicoes(instituicoes_lista)
+
+    return jsonify(nova_instituicao), 201
+
+@app.put("/instituicao/<int:id>")
+def putInstituicaoByIdResource(id):
+    dados_atualizados = request.json
+
+    if id not in instituicoes_dict:
+        return jsonify({"erro": "Instituição não encontrada"}), 404
+
+    dados_atualizados["CO_ENTIDADE"] = id
+
+    instituicoes_dict[id] = dados_atualizados
+
+    for i, inst in enumerate(instituicoes_lista):
+        if inst["CO_ENTIDADE"] == id:
+            instituicoes_lista[i] = dados_atualizados
+            break
+
+    escreverInstituicoes(instituicoes_lista)
+
+    return jsonify(dados_atualizados), 200
 
 @app.delete("/instituicao/<int:id>")
 def deleteInstituicaoByIdResource(id):
