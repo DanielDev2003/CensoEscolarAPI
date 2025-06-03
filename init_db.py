@@ -19,7 +19,7 @@ entidades_info = [(entidade['CO_ENTIDADE'],entidade['CO_REGIAO'],entidade['NO_RE
                     entidade['QT_MAT_PROF_TEC'],entidade['QT_MAT_EJA'],entidade['QT_MAT_ESP']
                     ) for entidade in entidades]
     
-connection = sqlite3.connect('entidades.db')
+connection = sqlite3.connect('censoescolar.db')
 cursor = connection.cursor() 
 with open('schema.sql') as file:
     cursor.executescript(file.read())
