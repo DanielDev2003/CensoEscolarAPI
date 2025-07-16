@@ -1,0 +1,48 @@
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database
+*.db
+
+# Flask instance folder
+instance/
+.env
+
+# Logs
+*.log
+
+# CSV ou arquivos de dados locais
+*.csv
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Virtual environment
+venv/
+.env/
+.venv/
+ENV/
+env.bak/
+*.bak
+
+# IDEs e editores
+.vscode/
+.idea/
+
+# Arquivos de cache do Jupyter ou IPython
+.ipynb_checkpoints/
+
+# Pytest
+.cache/
+.pytest_cache/
+
+# Migrations (caso adicione Flask-Migrate)
+migrations/
+
+# Arquivos gerados temporariamente
+*.tmp
+*.swp
