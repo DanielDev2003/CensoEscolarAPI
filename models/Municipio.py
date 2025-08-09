@@ -6,8 +6,8 @@ from marshmallow import Schema, fields, validate
 from helpers.database import db
 
 municipio_fields = {
-    'co_mesorregiao': flaskFields.Integer,
-    'no_mesorregiao': flaskFields.String,
+    'co_municipio': flaskFields.Integer,
+    'no_municipio': flaskFields.String,
     'co_uf': flaskFields.Integer
 }
 

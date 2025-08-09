@@ -37,16 +37,6 @@ class EntidadeConsultaAnoResource(Resource):
         logger.info("Get - Ano Instituições")
         try:
 
-            # cursor = getConnection().cursor()
-            # cursor.execute("""
-            #     SELECT DISTINCT e.ano_censo FROM tb_entidades e
-            #     ORDER BY e.ano_censo DESC;
-            # """)
-            # anos = cursor.fetchall()
-            # lista_anos = [{"ano": ano[0]} for ano in anos]
-            
-            # return lista_anos, 200 
-
             stmt = db.select(Entidade.ano_censo).distinct().order_by(Entidade.ano_censo.desc())
             result = db.session.execute(stmt).all()
             lista_anos = [{"ano": row[0]} for row in result]

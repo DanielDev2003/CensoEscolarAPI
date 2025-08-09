@@ -28,6 +28,6 @@ class Mesorregiao(db.Model):
 
 
 class MesorregiaoSchema(Schema):
-    co_mesorregiao = fields.Integer()
-    no_mesorregiao = fields.String()
-    co_uf = fields.Integer()
+    co_mesorregiao = fields.Integer(required=True)
+    no_mesorregiao = fields.String(required=True)
+    co_uf = fields.Integer(required=True)

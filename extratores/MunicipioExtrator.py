@@ -1,52 +1,32 @@
+# extratores/MunicipioExtrator.py
 import requests
-import psycopg2
-
-
+from models.Municipio import Municipio
+from helpers.database import db
 from helpers.logging import logger
-from helpers.database import connectDb
 
-def extrator(url):
-    requisicao = requests.get(url)
-    requisicaoJson = requisicao.json() 
-
-    municipiosList = []
-    for municipio in requisicaoJson:
-        
-        co_municipio = municipio['id']
-        no_municipio = municipio['nome']
-        if municipio.get('microrregiao') == None :
-            co_uf = municipio['regiao-imediata']['regiao-intermediaria']['UF']['id']
-            
-        else:   
-            co_uf = municipio['microrregiao']['mesorregiao']['UF']['id']
-            
-        municipiosList.append((co_municipio, no_municipio, co_uf))
-
-    return municipiosList
-
-def armazenarDados(municipiosList):
-       
+def extrair_municipios():
+    url = 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios'
     try:
-        connection = connectDb()
-        cursor = connection.cursor()
-        
-        cursor.executemany("""INSERT INTO tb_municipio(CO_MUNICIPIO, NO_MUNICIPIO, CO_UF) VALUES(%s ,%s, %s);""", municipiosList)
-        
-        connection.commit()
-        logger.info(f"Municípios inseridos com sucesso: {len(municipiosList)} registros")
-    except psycopg2.Error as e:
-        connection.rollback()
-        logger.error(f"Erro: {e.pgerror}")
-    finally:
-        cursor.close()
-        connection.close()
-    
+        response = requests.get(url)
+        response.raise_for_status()
+        dados = response.json()
 
-     
+        for item in dados:
+            co_municipio = item['id']
+            no_municipio = item['nome']
+            if item.get('microrregiao'):
+                co_uf = item['microrregiao']['mesorregiao']['UF']['id']
+            else:
+                co_uf = item['regiao-imediata']['regiao-intermediaria']['UF']['id']
 
-
-if __name__ == "__main__":
-    url ='https://servicodados.ibge.gov.br/api/v1/localidades/municipios'
-    municipiosList = extrator(url)
-    armazenarDados(municipiosList)
-    
+            municipio = Municipio(
+                co_municipio=co_municipio,
+                no_municipio=no_municipio,
+                co_uf=co_uf
+            )
+            db.session.merge(municipio)
+        db.session.commit()
+        logger.info(f"{len(dados)} municípios inseridos com sucesso.")
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Erro ao inserir municípios: {e}")

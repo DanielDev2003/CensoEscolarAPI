@@ -1,40 +1,25 @@
+# extratores/MicrorregiaoExtrator.py
 import requests
-import psycopg2
-
-from helpers.database import connectDb
+from models.Microrregiao import Microrregiao
+from helpers.database import db
 from helpers.logging import logger
 
-
-def extrator(url):
-    requisicao = requests.get(url)
-    requisicaoJson = requisicao.json() 
-    return requisicaoJson
-
-def armazenarDados(dados):
-
-    microrregiaoList = [(microrregiao['id'], microrregiao['nome'],
-                         microrregiao ['mesorregiao']['UF']['id']) for  microrregiao  in dados]
+def extrair_microrregioes():
+    url = 'https://servicodados.ibge.gov.br/api/v1/localidades/microrregioes'
     try:
-        connection = connectDb()
-        cursor = connection.cursor()
-        
-        cursor.executemany("""INSERT INTO tb_microrregiao(CO_MICRORREGIAO, NO_MICRORREGIAO, CO_UF) VALUES (%s ,%s, %s);""",microrregiaoList)
-        
-        connection.commit()
-        logger.info(f"Microrregião inseridas com sucesso: {len(microrregiaoList)} registros")
+        response = requests.get(url)
+        response.raise_for_status()
+        dados = response.json()
 
-    except psycopg2.Error as e:
-        connection.rollback()
-        logger.error(f"Erro: {e.pgerror}") 
-    finally:
-        connection.close()
-    
-        
-
-
-if __name__ == "__main__":
-
-    url ='https://servicodados.ibge.gov.br/api/v1/localidades/microrregioes'
-    dados = extrator(url)
-    armazenarDados(dados)
-    
+        for item in dados:
+            micro = Microrregiao(
+                co_microrregiao=item['id'],
+                no_microrregiao=item['nome'],
+                co_uf=item['mesorregiao']['UF']['id']
+            )
+            db.session.merge(micro)
+        db.session.commit()
+        logger.info(f"{len(dados)} microrregiões inseridas com sucesso.")
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Erro ao inserir microrregiões: {e}")

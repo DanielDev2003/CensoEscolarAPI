@@ -1,43 +1,25 @@
+# extratores/UfExtrator.py
 import requests
-import psycopg2
-
-
+from models.Uf import Uf
+from helpers.database import db
 from helpers.logging import logger
-from helpers.database import connectDb
 
-
-
-def extrator(url):
-    requisicao = requests.get(url)
-    requisicaoJson = requisicao.json() 
-    return requisicaoJson
-
-def armazenarDados(dados):
-
-    ufsList = [(uf['id'], uf["nome"], uf['sigla']) for uf  in dados]
-    try:
-        connection = connectDb()
-        cursor = connection.cursor()
-
-        cursor.executemany("""INSERT INTO tb_UF(CO_UF ,NO_UF, SG_UF) VALUES(%s ,%s ,%s);""",ufsList)
-        
-        connection.commit()
-        logger.info(f"UFs inseridos com sucesso: {len(ufsList)} registros")
-
-    except psycopg2.Error as e:
-        connection.rollback()
-        logger.error(f"Erro: {e.pgerror}") 
-    finally: 
-        cursor.close()
-        connection.close()
-   
-
-
-
-
-if __name__ == "__main__":
-    
+def extrair_ufs():
     url = 'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
-    dados = extrator(url)
-    armazenarDados(dados)
-    
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        dados = response.json()
+
+        for item in dados:
+            uf = Uf(
+                co_uf=item['id'],
+                no_uf=item['nome'],
+                sg_uf=item['sigla']
+            )
+            db.session.merge(uf)  # atualiza ou insere
+        db.session.commit()
+        logger.info(f"{len(dados)} UFs inseridas com sucesso.")
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Erro ao inserir UFs: {e}")
