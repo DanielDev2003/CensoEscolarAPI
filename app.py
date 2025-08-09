@@ -1,5 +1,5 @@
 from helpers.application import app , api
-from helpers.database import db
+#from helpers.database import db
 from helpers.CORS import cors
 
 from models.Uf import Uf
@@ -43,8 +43,8 @@ api.add_resource(MicrorregiaoResource, '/instituicoes/microrregiao')
 #EndPoint Municipio
 api.add_resource(MunicipioResource, '/instituicoes/municipio')
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 
  

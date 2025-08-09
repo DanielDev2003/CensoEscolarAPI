@@ -1,7 +1,6 @@
-import psycopg2
-from flask import g
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+from flask_migrate import Migrate
 
 from helpers.application import app
 
@@ -12,8 +11,10 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 
+#LEGADO
 # def getConnection():
 #     db = getattr(g, '_database', None)
 #     if db is None:
