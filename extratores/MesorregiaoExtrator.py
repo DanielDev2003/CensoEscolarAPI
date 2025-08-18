@@ -1,4 +1,3 @@
-# extratores/MesorregiaoExtrator.py
 import requests
 from models.Mesorregiao import Mesorregiao
 from helpers.database import db

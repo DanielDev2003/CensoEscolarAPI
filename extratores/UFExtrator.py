@@ -1,4 +1,3 @@
-# extratores/UfExtrator.py
 import requests
 from models.Uf import Uf
 from helpers.database import db

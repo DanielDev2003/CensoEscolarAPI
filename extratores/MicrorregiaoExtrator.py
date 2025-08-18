@@ -1,4 +1,3 @@
-# extratores/MicrorregiaoExtrator.py
 import requests
 from models.Microrregiao import Microrregiao
 from helpers.database import db

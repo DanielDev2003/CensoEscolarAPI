@@ -1,4 +1,3 @@
-# extratores/MunicipioExtrator.py
 import requests
 from models.Municipio import Municipio
 from helpers.database import db

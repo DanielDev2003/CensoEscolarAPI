@@ -1,4 +1,3 @@
-# extratores/EntidadeExtrator.py
 import requests
 import pandas as pd
 from typing import Dict, Tuple, Optional
@@ -129,7 +128,7 @@ def armazenar_entidades_csv(
 
 
 def main():
-    # Ajuste os caminhos conforme sua máquina:
+
     csv_2023 = Path(r"C:\Users\Daniel\Documents\Programação\IFPB-2025.1\PWeb II\microdados_censo_escolar_2023\dados\microdados_ed_basica_2023.csv")
     csv_2024 = Path(r"C:\Users\Daniel\Documents\Programação\IFPB-2025.1\PWeb II\microdados_censo_escolar_2024\dados\microdados_ed_basica_2024.csv")
 
